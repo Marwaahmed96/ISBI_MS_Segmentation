@@ -5,11 +5,6 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv3D, Dropout, MaxPooling3D, UpSampling3D, Activation, BatchNormalization, PReLU, Conv3DTranspose, concatenate
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint, CSVLogger, LearningRateScheduler, ReduceLROnPlateau, EarlyStopping
-#tf.enable_eager_execution()
-
-# force channels-last ordering
-tf.keras.backend.set_image_data_format('channels_last')
-print(tf.keras.backend.image_data_format())
 
 class U_Net_Model(tf.keras.Model):
     '''
