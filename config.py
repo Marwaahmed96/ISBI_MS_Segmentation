@@ -11,9 +11,6 @@ options = {}
 # Database options
 # --------------------------------------------------
 
-# path to training image folder. In all our experiments, training images were inside
-# a folder and image modalities were consistent across training images. In the case of
-# leave-one-out experiments, the same folder is used
 
 # pathes
 options['root_dir']='/media/marwa/F2F25460F2542ADD/MedicalAnalysis/'
@@ -22,7 +19,7 @@ options['code_path']=options['root_dir']+'Code/ISBI_MS_Segmentation/'
 options['train_folder'] = options['root_dir']+'DataSets/ISBI/train/'
 options['test_folder']  = options['root_dir']+'DataSets/ISBI/test/'
 options["train_csv_path"]=options['train_folder'] +"train_data.csv"
-options['h5_path'] = options['root_dir']+'DataSets/ISBI/h5df_files/'
+options['h5_path'] = options['root_dir']+'DataSets/ISBI/h5df_files/patch_{}_{}_{}/'
 
 # image modalities used (T1, FLAIR, PD, T2, ...) 
 options['modalities'] = ['flair','t2','pd','mprage']
@@ -62,7 +59,8 @@ options['fully_convolutional'] = True
 # --------------------------------------------------
 
 # 3D patch size. So, far only implemented for 3D CNN models. 
-options['patch_size'] = (24,24,16)
+options['patch_size'] = (16,16,16)
+options['h5_path'] = options['h5_path'].format(*options['patch_size'])
 
 # file paths to store the network parameter weights. These can be reused for posterior use. 
 options['weight_paths'] = options['code_path']+'weights/'

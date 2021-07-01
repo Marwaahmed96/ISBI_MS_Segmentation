@@ -45,6 +45,34 @@ def Tversky(targets, inputs, alpha=ALPHA, beta=BETA, smooth=1e-6):
     Tversky = (tp + smooth) / (tp + alpha*fp + beta*fn + smooth) 
     return Tversky
 
+class DiceCoefficient(tf.keras.metrics.Metric):    
+    def __init__(self, name='dice_coefficient', **kwargs):
+        super(DiceCoefficient, self).__init__(name=name, **kwargs)
+        self.true_positives = self.add_weight(name='dice_coeff', initializer='zeros')
+
+    def update_state(self, y_true, y_pred,  smooth=1.,eps: float = 1e-9):
+        y_true=zer_one(y_true)
+        y_pred=zer_one(y_pred)
+        batch_num=y_true.shape[0]
+        #print("batch_num",batch_num)
+
+        #print("y_true",y_true.shape,"y_pred",y_pred.shape)
+        intersec = K.sum(y_true * y_pred,axis=[1,2,3,4])
+        union = K.sum(y_pred ,axis=[1,2,3,4]) + K.sum(y_true,axis=[1,2,3,4]) 
+        #print("intersec",intersec,"union",union)
+        dice_coefficient=(2*intersec + eps) / (union+eps)
+        dice_coefficient_arr=dice_coefficient.numpy()
+        #print("dice_coefficient_arr shape",dice_coefficient_arr.shape)
+        for i in range(len(dice_coefficient_arr)):
+            if K.sum(y_true)==0 and K.sum(y_pred)==0:
+                dice_coefficient_arr[i]=1
+        dice_coefficient=tf.convert_to_tensor(dice_coefficient_arr)
+        
+        self.true_positives.assign_add(K.mean(dice_coefficient ))
+
+    def result(self):
+        return self.true_positives
+
 def dice_coefficient(y_true, y_pred, smooth=1.,eps: float = 1e-9):
     y_true=zer_one(y_true)
     y_pred=zer_one(y_pred)

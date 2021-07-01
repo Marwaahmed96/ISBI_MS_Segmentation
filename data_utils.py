@@ -31,6 +31,7 @@ def load_data_patches(options,phase='train', fold=0):
     files_ref={}
     patches=0
     for file in files:
+        print(file)
         #with h5py.File(raw_path, 'r') as f:
         raw_file = h5py.File(file, 'r') # should not close it immediately
         # raw_data = raw_file["raw_data"]

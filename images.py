@@ -33,5 +33,9 @@ def load_img_header(file_path):
     file=nib.load(file_path)
     return file.header
 
-def normalize_image(image,datatype):
+def normalize_image(image,datatype=np.float32):
     return (image.astype(dtype=datatype) - image[np.nonzero(image)].mean()) / image[np.nonzero(image)].std()
+
+def mean_std_normalize(data: np.ndarray):
+    data_min = np.min(data)
+    return (data - data_min) / (np.max(data) - data_min)

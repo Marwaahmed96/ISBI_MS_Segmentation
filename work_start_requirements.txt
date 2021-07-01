@@ -1,0 +1,8 @@
+SimpleITK
+nibabel
+sklearn
+pip install opencv-python
+
+just for try uninstall later
+lasagne
+

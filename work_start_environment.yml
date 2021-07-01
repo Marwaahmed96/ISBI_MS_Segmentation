@@ -1,0 +1,17 @@
+name: work_start
+channels:
+  - javascript
+dependencies:
+  - python=3.7   # or 2.7
+  - numpy=1.20.*
+  - scipy=1.6.2
+  - nodejs=0.10.*
+  - flask
+  - pip
+  - matplotlib=3.3.4
+  - tensorflow
+  - pandas
+  - sklearn
+  - cv2
+  - pip:
+    - Flask-Testing

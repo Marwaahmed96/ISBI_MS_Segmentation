@@ -36,7 +36,7 @@ class ISBIDataset(tf.keras.utils.Sequence):
                     
                 else:
                     x_data=patient_x_data[iter_start:]
-                    y_data=patient_y_data[iter_start: iter_end]
+                    y_data=patient_y_data[iter_start: ]
                 
                 x=x_data
                 y=y_data
@@ -50,5 +50,15 @@ class ISBIDataset(tf.keras.utils.Sequence):
                     iter_start+=batch_size
                     x_data=[]
                     y_data=[]
-                    yield np.stack(x), np.stack(y)
-          
+                    #handle if last batch less than batch_size
+                    x=np.stack(x).astype(np.float32)
+                    y=np.stack(y).astype(np.float32)
+                    yield  x, y
+                    
+        '''
+        if len(x)<self.batch_size:
+            x=np.concatenate(x,x[:self.batch_size-len(x)+1])
+            print('last',x.shape)
+            y=np.concatenate(y,y[:self.batch_size-len(y)+1])
+            yield x,y
+        '''
