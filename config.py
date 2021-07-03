@@ -14,12 +14,17 @@ options = {}
 
 # pathes
 options['root_dir']='/media/marwa/F2F25460F2542ADD/MedicalAnalysis/'
-options['data_path']=options['root_dir']+'DataSets/ISBIOrig/training/'
 options['code_path']=options['root_dir']+'Code/ISBI_MS_Segmentation/'
+## train
+options['data_path']=options['root_dir']+'DataSets/ISBIOrig/training/'
 options['train_folder'] = options['root_dir']+'DataSets/ISBI/train/'
-options['test_folder']  = options['root_dir']+'DataSets/ISBI/test/'
 options["train_csv_path"]=options['train_folder'] +"train_data.csv"
 options['h5_path'] = options['root_dir']+'DataSets/ISBI/h5df_files/patch_{}_{}_{}/'
+
+## test
+options['test_data_path']=options['root_dir']+'DataSets/ISBIOrig/testdata_website_2016-03-24/testdata_website/'
+options['test_folder']  = options['root_dir']+'DataSets/ISBI/test/'
+options["test_csv_path"]=options['test_folder'] +"test_data.csv"
 
 # image modalities used (T1, FLAIR, PD, T2, ...) 
 options['modalities'] = ['flair','t2','pd','mprage']
@@ -60,8 +65,10 @@ options['fully_convolutional'] = True
 
 # 3D patch size. So, far only implemented for 3D CNN models. 
 options['patch_size'] = (16,16,16)
+options['step_size'] = (8,8,8)
 options['h5_path'] = options['h5_path'].format(*options['patch_size'])
-
+options['train_reconstruct_path'] = options['root_dir']+'DataSets/ISBI/reconstruct/train/'
+options['test_reconstruct_path'] = options['root_dir']+'DataSets/ISBI/reconstruct/test/'
 # file paths to store the network parameter weights. These can be reused for posterior use. 
 options['weight_paths'] = options['code_path']+'weights/'
 

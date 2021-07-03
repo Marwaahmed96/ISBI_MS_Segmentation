@@ -86,3 +86,32 @@ class Reconstruct:
             f.create_dataset("shape", data=self.shape)
             f.create_dataset("data", data=self.data)
         nib.save(nib.Nifti1Image(self.data, np.eye(4)),  name + ".nii.gz")
+        
+    
+def predict_img(img,model, patch_size, step_size, out_path):
+    '''
+    images: x,y,z,channels
+    '''
+    shape=img.shape[:-1]
+    #print(shape)
+    predict  = Reconstruct(0, shape, patch_size, False)
+    x=0
+    while(x+patch_size[0] <= shape[0]):
+        y=0
+        while(y+patch_size[1]<= shape[1]):
+            z=0
+            while(z+patch_size[2] <= shape[2]):
+                #print(z, (shape[2]-(shape[2]%patch_size[2])))
+                patch_start=(x,y,z)
+                patch_end=tuple([p+s for p,s in zip(patch_start,patch_size)])
+                #print('start',patch_start,'end',patch_end)
+                patch_img=img[patch_start[0]:patch_end[0], patch_start[1]:patch_end[1], patch_start[2]:patch_end[2]]
+
+                predict_img=model.predict(np.expand_dims(patch_img,axis=0))                             
+                predict.add(np.squeeze(np.squeeze(predict_img, axis=0),axis=-1), patch_start)             
+
+                z+=step_size[2]  
+            y+=step_size[1]
+        x+=step_size[0]
+ 
+    predict.store(out_path)
