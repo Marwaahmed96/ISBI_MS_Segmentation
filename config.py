@@ -42,7 +42,7 @@ options['x_names'] = ['flair.nii', 'pd.nii','mprage.nii','t2.nii']
 options['y_names'] = ['mask1.nii', 'mask2.nii']
 
 # --------------------------------------------------
-# Experiment options
+# Preprocessing options
 # --------------------------------------------------
 
 # Select an experiment name to store net weights and segmentation masks
@@ -60,19 +60,11 @@ options['randomize_train'] = True
 # models have been not tested with this cascaded model 
 options['fully_convolutional'] = True
 
-# percentage of the training vector that is going to be used to validate the model during training
-options['train_split'] = 0.25
 
-# post-processing binary threshold.
-options['t_bin'] = 0.8
+# --------------------------------------------------
+# model parameters
+# --------------------------------------------------
 
-# post-processing minimum lesion size of soutput candidates
-options['l_min'] = 20
-
-options['seed'] = 55  
-options['k_fold'] = 4
-    
-#model config
 options['channels'] = len(options['modalities'])
 options['out_channels'] = 1
 # 3D patch size. So, far only implemented for 3D CNN models. 
@@ -83,29 +75,37 @@ options['depth'] = 4 # depth of layers for V/Unet
 options['n_base_filters'] = 32
 options['pooling_kernel'] = (2, 2, 2)  # pool size for the max pooling operations
 options['deconvolution'] = True  # if False, will use upsampling instead of deconvolution
+options['h5_path'] = options['h5_path'].format(*options['patch_size'])
+
+
+# --------------------------------------------------
+# model train config
+# --------------------------------------------------
+
+# percentage of the training vector that is going to be used to validate the model during training
+options['train_split'] = 0.25
+
+# Number of samples used to test at once. This parameter should be around 50000 for machines
+# with less than 32GB of RAM
+options['batch_size'] = 1500 #50000
     
-#model train config
 #Where to save the model weights during train
 # file paths to store the network parameter weights. These can be reused for posterior use. 
-options['weight_paths'] = options['code_path']+'weights/'
+options['weights_path'] = options['code_path']+'weights/'
 #where the model weights initialization so each time begin with the same weight to compare between different models
-options['initial_weights_path'] = options['weight_paths']+'initial_weights.hdf5'
+options['initial_weights_path'] = options['weights_path']+'initial_weights.hdf5'
+
 
 #,TPR,FPR,FNR,Tversky,dice_coefficient
 options['metrics'] = ['mse']
 # maximum number of epochs without improving validation before stopping training 
-options['patience'] = 5  # learning rate will be reduced after this many epochs if the validation loss is not improving
+options['patience'] = 25  # learning rate will be reduced after this many epochs if the validation loss is not improving
 options['early_stop'] = 20  # training will be stopped after this many epochs without the validation loss improving
 options['initial_learning_rate'] = 1e-3
 options['learning_rate_drop'] = 0.1  # factor by which the learning rate will be reduced
 # maximum number of epochs used to train the model
 options['n_epochs'] = 50 #200
 
-# Number of samples used to test at once. This parameter should be around 50000 for machines
-# with less than 32GB of RAM
-options['batch_size'] = 1500 #50000
-
-options['h5_path'] = options['h5_path'].format(*options['patch_size'])
 # verbositiy of CNN messaging: 00 (none), 01 (low), 10 (medium), 11 (high)
 options['net_verbose'] = 11
 
@@ -113,6 +113,16 @@ options['net_verbose'] = 11
 # post_processing
 # --------------------------------------------------
 
-options['step_size'] = (8,8,8)
+# post-processing binary threshold.
+options['t_bin'] = 0.8
+
+# post-processing minimum lesion size of soutput candidates
+options['l_min'] = 20
+
+options['step_size'] = (10,10,10)
 options['train_reconstruct_path'] = options['root_dir']+'DataSets/ISBI/reconstruct/train/'
 options['test_reconstruct_path'] = options['root_dir']+'DataSets/ISBI/reconstruct/test/'
+
+
+options['seed'] = 55  
+options['k_fold'] = 4

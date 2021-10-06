@@ -1,3 +1,6 @@
+import tensorflow as tf
+import tensorflow.keras.backend as K
+
 class DiceCoefficient(tf.keras.metrics.Metric):    
     def __init__(self, name='dice_coefficient', **kwargs):
         super(DiceCoefficient, self).__init__(name=name, **kwargs)
@@ -49,11 +52,41 @@ ALPHA=1.5
 threshold=0.5
  
 #@tf.function
-def TPR(targets, inputs, alpha=ALPHA, beta=BETA, smooth=1e-6):
+def TPR2(targets, inputs, alpha=ALPHA, beta=BETA, smooth=1e-6):
     tn, fp, fn, tp=confusion_matrix_calc(targets,inputs)
     TPR = (tp +smooth)/(tp+fn+smooth)
     return TPR
 #@tf.function
+
+def TPR_FPR(targets, inputs, smooth=1e-6):
+    inputs = zer_one(inputs)
+    tp = tf.keras.metrics.TruePositives()
+    tp.update_state(targets, inputs)
+    tp=tp.result().numpy()
+    
+    fp = tf.keras.metrics.FalsePositives()
+    fp.update_state(targets, inputs)
+    fp=fp.result().numpy()
+    
+    fn = tf.keras.metrics.FalseNegatives()
+    fn.update_state(targets, inputs)
+    fn=fn.result().numpy()
+    
+    tn = tf.keras.metrics.TrueNegatives()
+    tn.update_state(targets, inputs)
+    tn=tn.result().numpy()
+    
+    #fnr FN/FN+TP
+    #tpr TP/TP+FN
+    #tnr TN/TN+FP
+    #ppv TP/TP+FP.
+    #fpr FP/FP+TN
+    # FPR = FP/FP+TP valverde
+    # VD = |TPs −TPgt|/TPgt  valverde
+
+    return tp/(tp+fn), fp/(fp+tn)
+
+
 def FPR(targets, inputs, alpha=ALPHA, beta=BETA, smooth=1e-6):
     tn, fp, fn, tp=confusion_matrix_calc(targets,inputs)
     FPR = (fp +smooth)/(fp+tp+ smooth) 
@@ -89,3 +122,9 @@ def dice_coefficient(y_true, y_pred, smooth=1.,eps: float = 1e-9):
             dice_coefficient_arr[i]=1
     dice_coefficient=tf.convert_to_tensor(dice_coefficient_arr)
     return K.mean(dice_coefficient )
+
+def MeanIoU(y_true, y_predict):
+    y_predict= zer_one(y_predict)
+    m = tf.keras.metrics.MeanIoU(num_classes=2)
+    m.update_state(y_true, y_predict)
+    return m.result().numpy()
